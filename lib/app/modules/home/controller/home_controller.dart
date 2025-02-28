@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart';
 
 class HomeController extends GetxController {
+  FocusNode searchFocusNode = FocusNode(); // Added FocusNode
   var users = <Map<String, dynamic>>[].obs;
   var filteredUsers = <Map<String, dynamic>>[].obs;
   var isLoading = false.obs;
@@ -14,8 +16,21 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
-    fetchUsers();
     super.onInit();
+
+    ever(searchQuery, (_) {
+      if (searchQuery.value.isEmpty) {
+        searchFocusNode.unfocus();
+      }
+    });
+
+    fetchUsers();
+  }
+
+  @override
+  void onClose() {
+    searchFocusNode.dispose(); // Dispose FocusNode
+    super.onClose();
   }
 
   Future<void> fetchUsers() async {
@@ -36,8 +51,15 @@ class HomeController extends GetxController {
       //passing error to check error type
       errorMessage.value = _handleError(e);
       //printing the error of the type it returns
-      Get.snackbar("Error", errorMessage.value,
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        "Error",
+        errorMessage.value,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 2),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        icon: Icon(Icons.error_outline, color: Colors.white),
+      );
     } finally {
       isLoading(false);
     }
@@ -56,17 +78,24 @@ class HomeController extends GetxController {
     } else {
       // finding user with their name and if they want to enter email instead that can also be done
       filteredUsers.value = users
-          .where((user) =>
-              user['name']
-                  .toString()
-                  .toLowerCase()
-                  .contains(query.toLowerCase()) ||
-              user['email']
-                  .toString()
-                  .toLowerCase()
-                  .contains(query.toLowerCase()))
+          .where((user) => user['name']
+              .toString()
+              .toLowerCase()
+              .contains(query.toLowerCase()))
           .toList();
+
+      // finding with email (optional)
+      //     user['email']
+      //         .toString()
+      //         .toLowerCase()
+      //         .contains(query.toLowerCase()))
+      // .toList();
     }
+  }
+
+  // Dismiss Keyboard on List Tap
+  void onCloseFocus() {
+    searchFocusNode.unfocus(); // Close keyboard
   }
 
   // **NEW: Delete User**
@@ -76,6 +105,16 @@ class HomeController extends GetxController {
         id); // Remove from main list of users fetching from the api
     filteredUsers.removeWhere(
         (user) => user['id'] == id); // Remove from filtered list for search
+    Get.snackbar(
+      "Success", // Title
+      "User deleted successfully", // Message
+      snackPosition: SnackPosition.BOTTOM, // Position at bottom
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+      // borderRadius: 10,
+      duration: Duration(seconds: 2),
+      icon: Icon(Icons.check_circle, color: Colors.white),
+    );
   }
 
   // **NEW: Add User**

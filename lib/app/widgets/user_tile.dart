@@ -5,7 +5,8 @@ class UserListTile extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
 
-  const UserListTile({super.key, required this.user, this.onTap, this.onDelete});
+  const UserListTile(
+      {super.key, required this.user, this.onTap, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +14,8 @@ class UserListTile extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       elevation: 4,
       child: ListTile(
-        leading: CircleAvatar(child: Text(user['name'][0])),
-        title: Text(user['name']),
+        leading: CircleAvatar(child: Text(user['name'][0].toUpperCase())),
+        title: Text(user['name'][0].toUpperCase() + user['name'].substring(1)),
         subtitle: Text(user['email']),
         onTap: onTap,
         trailing: IconButton(

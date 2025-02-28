@@ -12,8 +12,7 @@ class UserDetailView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        iconTheme: IconThemeData(
-            color: Colors.white),
+        iconTheme: IconThemeData(color: Colors.white),
         title: Text(
           "User Details",
           style: TextStyle(
@@ -33,7 +32,7 @@ class UserDetailView extends StatelessWidget {
                 radius: 50,
                 backgroundColor: Colors.blueAccent,
                 child: Text(
-                  user['name'][0],
+                  user['name'][0].toUpperCase(),
                   style: TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
@@ -42,7 +41,7 @@ class UserDetailView extends StatelessWidget {
               ),
               SizedBox(height: 10),
               Text(
-                user['name'],
+                user['name'][0].toUpperCase() + user['name'].substring(1),
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               Text(
